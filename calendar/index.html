@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>calendar by SunshineLXH</title>
+    <style>
+        html, body, div, ul, ol, li, h1, h2, h3, td, button, p, span, input, a, dl {
+            margin: 0;
+            padding: 0;
+        }
+        ul, li {
+            list-style: none;
+        }
+        a {
+            text-decoration: none;
+        }
+        body, th, td {
+            font-family: arial;
+        }
+        .wrap {
+            width: 540px;
+            height: 425px;
+            margin: 20px;
+        }
+
+        /*上面top部分,包括左边选择组件条及右边的当前时间*/
+        .top {
+            height: 40px;
+            background: #F3F5FA;
+            font-size: 12px;
+            position: relative;
+        }
+        .control-bar {
+            float: left;
+            height: 20px;
+            line-height: 20px;
+            padding: 10px 5px;
+            text-align: left;
+        }
+        .control-module {
+            border: 1px solid #c9cccf;
+            height: 20px;
+            line-height: 20px;
+            margin-right: 5px;
+            float: left;
+            position: relative;
+            text-align: left;
+            background-color: #FDFDFD;
+        }
+        .prev, .next {
+            width: 15px;
+            height: 20px;
+            line-height: 20px;
+            float: left;
+            text-align: left;
+            position: relative;
+        }
+        .prev {
+            left: 3px;
+        }
+        .next {
+            right: -5px;
+        }
+        .trigger {
+            width: 15px;
+            height: 12px;
+            line-height: 12px;
+            font-size: 12px;
+            float: right;
+            margin-right: -10px;
+            text-align: left;
+            color: #C0C0C0;
+            cursor: pointer;
+        }
+        .year {
+            width: 43px;
+        }
+        .month {
+            width: 26px;
+        }
+        .holiday {
+            width: 88px;
+        }
+        .list {
+            display: none;
+            color: #9A9A9A;
+            height: 169px;
+            left: -1px;
+            line-height: 20px;
+            font-size: 12px;
+            position: absolute;
+            text-align: center;
+            top: 20px;
+            width: 125px;
+            z-index: 99;
+            zoom: 1;
+            background: #FFFFFF;
+            border: 1px solid #C9CCCF;
+            border-top: none;
+        }
+        .list li {
+            margin-bottom: 1px;
+        }
+        .list li:hover {
+            background: #77A1B4;
+            color: #FFFFFF;
+            cursor: pointer;
+        }
+        .field {
+            cursor: pointer;
+            float: left;
+            text-align: left;
+        }
+        .control {
+            padding: 4px 10px 0;
+            border-left: 1px solid #C9CCCF;
+            border-right: 1px solid #C9CCCF;
+            float: left;
+            height: 12px;
+            line-height: 12px;
+            white-space: nowrap;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        .year-control {
+            width: 100px;
+        }
+
+        .month-control {
+            width: 83px;
+        }
+        .holiday-control {
+            width: 125px;
+            zoom: 1;
+        }
+        .control-holiday {
+            border: none;
+        }
+        .btn-today {
+            width: 60px;
+            cursor: pointer;
+            text-align: center;
+            white-space: nowrap;
+        }
+        .time-panel {
+            width: 125px;
+            text-align: left;
+            height: 40px;
+            line-height: 40px;
+            float: right;
+            color: #999;
+            white-space: nowrap;
+        }
+
+        /*下面部分，包括bottom-left, bottom-right*/
+        .bottom {
+            height: 385px;
+        }
+        /*bottom-left部分:固定的dates-head和动态的dates-detail*/
+        .bottom-left {
+            width: 398px;
+            height: 383px;
+            border: 1px solid #D2D2D2;
+            float: left;
+        }
+        .dates-head {
+            height: 39px;
+            border-bottom: 1px solid #F1EBE4;
+        }
+        .day-th {
+            background: #FEFBEB;
+            float: left;
+            width: 14.05%;
+            font-size: 14px;
+            height: 13px;
+            line-height: 13px;
+            text-align: center;
+            padding: 14px 0 12px;
+            border-right: 1px solid #F1EBE4;
+        }
+        .th-last {
+            border: none;
+        }
+        /*bottom-right部分：b-r-base, b-r-extra, b-r-linktail*/
+        .bottom-right {
+            width: 139px;
+            height: 383px;
+            border: 1px solid #D2D2D2;
+            border-left: none;
+            float: left;
+            font-size: 12px;
+            display: flex;
+            flex-direction: column;
+        }
+        .b-r-base {
+            width: 139px;
+            height: 190px;
+            border-bottom: 1px solid #D2D2D2;
+            text-align: center;
+        }
+        .base-dates-bar {
+            width: 123px;
+            margin: 15px auto;
+        }
+        .weekday {
+            padding-left: 6px;
+        }
+        .date-show-panel {
+            font-size: 60px;
+            height: 60px;
+            line-height: 60px;
+            padding: 0 30px;
+            text-align: center;
+            color: #CC0000;
+        }
+        .desc {
+            text-align: left;
+            line-height: 18px;
+            height: 61px;
+            color: #999999;
+        }
+        .lunar, .lunar-ganzi, .other-info {
+            text-align: center;
+        }
+        .lunar {
+            height: 25px;
+            line-height: 25px;
+            overflow-x: hidden;
+            overflow-y: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .b-r-extra {
+            width: 106px;
+            height: 125px;
+            padding-bottom: 20px;
+            margin: 0 14px;
+            border-bottom: 1px dashed #f1ebe4;
+        }
+        .suited, .tapu {
+            padding: 8px 0;
+            width: 50px;
+            height: 150px;
+            float: left;
+            text-align: center;
+        }
+        .suited {
+            margin-right: 2px;
+            color: #B04343;
+        }
+        .st-label {
+            font-size: 12px;
+            margin-bottom: 3px;
+            text-align: center;
+        }
+        .st-items {
+            padding-top: 10px;
+            width: 50px;
+        }
+        .st-items li {
+            padding: 1px 0;
+            width: 48px;
+            height: 18px;
+            line-height: 18px;
+        }
+        .st-items .cl {
+            clear: both;
+        }
+        .b-r-linktail {
+            text-align: right;
+            margin-top: 5px;
+            padding-right: 10px;
+            width: 129px;
+            height: 18px;
+            line-height: 18px;
+        }
+        .historyday {
+            color: #999;
+        }
+        .clearfix:after {
+            clear: both;
+            content: '';
+            display: block;
+            height: 0;
+            visibility: hidden;
+        }
+        .oLi {
+            float: left;
+            width: 14.05%;
+            height: 46px;
+            border-right: 1px solid #F1EBE4;
+            border-bottom: 1px solid #F1EBE4;
+            font-size: 18px;
+            cursor: pointer;
+            z-index: 2;
+            padding-top: 10px;
+            position: relative;
+        }
+        .oLi-last {
+            border-right: none;
+        }
+        .oLi-lastRow {
+            height: 48px;
+            border-bottom: none;
+        }
+        .holidayInfo {
+            position: absolute;
+            top: 1px;
+            left: 1px;
+            display: block;
+            overflow: hidden;
+            width: 15px;
+            height: 15px;
+            font-size: 14px;
+        }
+        .solarDay {
+            width: 100%;
+            height: 18px;
+            line-height: 18px;
+            text-align: center;
+            font-weight: 600;
+        }
+        .lunarDay {
+            color: #999999;
+            display: block;
+            font-size: 12px;
+            height: 25px;
+            line-height: 25px;
+            overflow: hidden;
+            text-align: center;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .red {
+            color: red;
+        }
+        .listUl1, .listUl2, .listUl3 {
+            display: none;
+            background: #fff;
+            border: 1px solid #C9CCCF;
+            position: absolute;
+            top: 20px;
+            left: 15px;
+            height: 169px;
+            text-align: center;
+            line-height: 20px;
+            overflow: auto;
+            border-top: none;
+            word-break: break-all;
+            z-index: 200;
+        }
+        .listUl1 li, .listUl2 li, .listUl3 li {
+            height: 20px;
+            color: #999999;
+        }
+        .listUl1 {
+            width: 68px;
+        }
+        .listUl1 li {
+            cursor: pointer;
+        }
+        .listUl1 li:hover {
+            background: #77A1B4;
+        }
+
+        .listUl2 {
+            width: 51px;
+        }
+        .listUl2 li {
+            cursor: pointer;
+        }
+        .listUl2 li:hover {
+            background: #77A1B4;
+        }
+
+        .listUl3 {
+            left: -1px;
+            width: 125px;
+        }
+        .listUl3 li {
+            cursor: pointer;
+        }
+        .listUl3 li:hover {
+            background: #77A1B4;
+        }
+        .td {
+            position: absolute;
+            z-index: 99;
+            width: 24px;
+            height: 24px;
+            border: 3px solid #CC0000;
+            top: 4px;
+            left: 13px;
+            border-radius: 24px;
+        }
+
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <div class="top clearfix">
+        <div class="control-bar">
+            <div class="control-module year-control">
+                <a href="javascript:void(0);" class="prev"><</a>
+                <div class="control">
+                    <i class="trigger">∨</i>
+                    <div class="field year">2016年</div>
+                </div>
+                <a href="javascript:void(0);" class="next">></a>
+            </div>
+            <div class="control-module control-module month-control mouth-bar">
+                <a href="javascript:void(0);" class="prev"><</a>
+                <div class="control">
+                    <i class="trigger">∨</i>
+                    <div class="field month">4月</div>
+                </div>
+                <a href="javascript:void(0);" class="next">></a>
+            </div>
+            <div class="control-module control-module holiday-control holiday-bar">
+                <div class="control control-holiday">
+                    <i class="trigger">∨</i>
+                    <div class="field holiday">2016年节假日安排</div>
+                </div>
+            </div>
+            <div class="control-module btn-today">返回今天</div>
+        </div>
+        <div class="time-panel">
+            <dl class="clearfix">北京时间：&nbsp;<span class="time-monitor"></span></dl>
+        </div>
+    </div>
+    <div class="bottom">
+        <div class="bottom-left">
+            <ul class="dates-head clearfix">
+                <li class="day-th">一</li>
+                <li class="day-th">二</li>
+                <li class="day-th">三</li>
+                <li class="day-th">四</li>
+                <li class="day-th">五</li>
+                <li class="day-th weekend">六</li>
+                <li class="day-th weekend th-last">七</li>
+            </ul>
+            <ol class="dates-detail"></ol>
+        </div>
+        <div class="bottom-right">
+            <div class="b-r-base">
+                <div class="base-dates-bar">
+                    <span class="date"></span>
+                    <span class="weekday"></span>
+                </div>
+                <div class="date-show-panel"></div>
+                <div class="desc">
+                    <div class="lunar"></div>
+                    <div class="lunar-ganzi"></div>
+                    <div class="other-info">
+                        <span class="animal-year">
+                            [
+                            <strong class="animal"></strong>
+                            ]
+                        </span>
+                        <span class="astro"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="b-r-extra clearfix">
+                <div class="suited">
+                    <h3 class="st-label">宜</h3>
+                    <ul class="st-items clearfix">
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li class="cl"></li>
+                    </ul>
+                </div>
+                <div class="tapu">
+                    <h3 class="st-label">忌</h3>
+                    <ul class="st-items clearfix">
+                        <li></li>
+                        <li></li>
+                        <li class="cl"></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="b-r-linktail">
+                <a class="historyday">历史上的今天</a>
+            </div>
+            <div class="goupiao"></div>
+        </div>
+    </div>
+</div>
+<script src="calendar.js"></script>
+</body>
+</html>
